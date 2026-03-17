@@ -2,7 +2,7 @@
 
 > Generador automático de diagramas de flujo swimlane en formato XML draw.io, impulsado por Claude AI.
 
-**Autor:** Daniel Arauz Sanjuan ·Foscal Floridablanca, Santander, CO  
+**Autor:** Daniel Arauz Sanjuan, Floridablanca, Santander, CO  
 **Versión:** 2.0 · Actualizada 2026-03-17  
 **Dominio:** Procedimientos institucionales Hospitalarios
 

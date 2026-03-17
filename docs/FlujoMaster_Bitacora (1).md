@@ -6,10 +6,10 @@
 
 ## [2026-03-13] Sesión 1 — Construcción inicial del sistema
 
-**Contexto:** Se construyó FlujoMaster desde cero como sistema de análisis de procedimientos FOSCAL para generar diagramas draw.io en formato XML.
+**Contexto:** Se construyó FlujoMaster desde cero como sistema de análisis de procedimientos para generar diagramas draw.io en formato XML.
 
 **Decisiones tomadas:**
-- Los procedimientos FOSCAL son siempre lineales y secuenciales — nunca inferir paralelismos
+- Los procedimientos clínicos son siempre lineales y secuenciales — nunca inferir paralelismos
 - Las columnas swimlane deben derivarse literalmente del campo "Persona Responsable" — nunca fusionar por similitud
 - El XML no usa swimlanes nativos de draw.io — se construye con elementos independientes y coordenadas absolutas
 - Se definieron reglas R1–R11 como base del sistema
@@ -18,7 +18,7 @@
 
 ## [2026-03-13] Sesión 2 — Primer documento procesado
 
-**Documento:** Gestión del Riesgo Operacional V3 FOSCAL
+**Documento:** Gestión del Riesgo Operacional V3 
 **Estado:** XML generado y validado ✅
 **Aprendizaje:** El flujo del primer documento confirmó que la lectura literal de responsables funciona — no hubo ambigüedades en la asignación de columnas.
 
@@ -45,7 +45,7 @@
 
 **Problema:** XML desbordaba los límites de página carta en draw.io.
 **Intento 1:** Reducir ancho de columna de 400px a 350px → seguía desbordando con 5 cols (1750px > 1169px).
-**Intento 2:** Medir directamente desde imagen de referencia FOSCAL con PIL.
+**Intento 2:** Medir directamente desde imagen de referencia con PIL.
 
 **Aprendizaje:** Las medidas no se estiman — se miden. El error principal era la separación entre nodos: se usaba 20px cuando la real era 60px. Eso causaba que los nodos se apilaran demasiado arriba y el último rombo cayera fuera del margen inferior.
 
@@ -164,7 +164,7 @@ Figura y texto nunca salen de su celda. whiteSpace=wrap + overflow=hidden obliga
 
 ## [2026-03-17] Sesión 8 — Prueba con documento real: Ventilación No Invasiva
 
-**Documento:** PR Ventilación No Invasiva UCI Adultos FOSCAL
+**Documento:** PR Ventilación No Invasiva UCI Adultos 
 **Responsables detectados:** 6 únicos
 1. Médico(a)
 2. Enfermero(a)

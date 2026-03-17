@@ -4,140 +4,215 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FlujoMaster v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { min-height: 100vh; background: #f0f2f8; font-family: Verdana, sans-serif; padding: 16px; }
-
-  .header {
-    background: linear-gradient(135deg, #1a1a6e, #3333CC);
-    border-radius: 12px;
-    padding: 18px 24px;
-    margin-bottom: 16px;
-    color: #fff;
+  :root {
+    --foscal-blue-dark: #003366;
+    --foscal-blue: #0066b3;
+    --foscal-blue-light: #0099cc;
+    --foscal-green: #7ab51d;
+    --foscal-orange: #f7941d;
+    --bg-dark: #001a33;
+    --bg-card: #002244;
+    --bg-input: #001a33;
+    --border-color: #004080;
+    --text-primary: #ffffff;
+    --text-secondary: #a3c2db;
+    --text-muted: #6699cc;
   }
-  .header h1 { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
-  .header h1 span { font-size: 13px; opacity: .7; }
-  .header p { font-size: 12px; opacity: .8; margin-top: 4px; }
+  body {
+    min-height:100vh; background:#ffffff;
+    font-family:'Google Sans',sans-serif;
+    padding:20px; color:var(--text-primary);
+  }
+  .accent-bar {
+    height:10px;
+    background:linear-gradient(90deg,var(--foscal-blue-dark),var(--foscal-blue),var(--foscal-green),var(--foscal-orange),var(--foscal-green));
+    border-radius:4px; margin-bottom:18px;
+  }
+  .header {
+    background:linear-gradient(135deg,var(--foscal-blue-dark) 0%,var(--foscal-blue) 60%,var(--foscal-blue-light) 100%);
+    border-radius:16px; padding:22px 28px; margin-bottom:20px;
+    position:relative; overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,102,179,0.4);
+    border:1px solid rgba(255,255,255,0.1);
+  }
+  .header::before {
+    content:''; position:absolute; top:-50%; right:-10%;
+    width:350px; height:350px;
+    background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .header-content { position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:16px; }
+  .header-left { display:flex;align-items:center;gap:14px; }
+  .header-icon {
+    width:52px;height:52px;
+    background:rgba(255,255,255,0.15);
+    border-radius:12px;display:flex;align-items:center;justify-content:center;
+    border:1px solid rgba(255,255,255,0.2);flex-shrink:0;
+  }
+  .header-icon svg { width:32px;height:32px; }
+  .header-text .pre-title { font-size:11px;font-weight:500;letter-spacing:3px;opacity:.85;text-transform:uppercase;margin-bottom:2px; }
+  .header-text h1 { font-size:32px;font-weight:700;letter-spacing:1px;line-height:1; }
+  .badge { font-size:10px;font-weight:600;background:var(--foscal-green);padding:3px 9px;border-radius:20px;margin-left:10px;vertical-align:middle;letter-spacing:0; }
+  .header-text .sub-title { font-size:10px;font-weight:500;letter-spacing:2.5px;opacity:.8;text-transform:uppercase;margin-top:4px; }
 
   .card {
-    background: #fff;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 14px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    background:linear-gradient(135deg,var(--foscal-blue-dark) 0%,var(--foscal-blue) 40%,var(--foscal-green) 75%,var(--foscal-orange) 100%);
+    border:none; border-radius:16px; padding:20px; margin-bottom:18px;
+    box-shadow:0 6px 28px rgba(0,102,179,0.25);
   }
-
-  .input-label { font-size: 12px; font-weight: bold; color: #333; margin-bottom: 8px; }
-
-  textarea {
-    width: 100%;
-    height: 160px;
-    border-radius: 7px;
-    border: 1.5px solid #c5c9e0;
-    padding: 10px;
-    font-size: 12px;
-    font-family: Verdana, sans-serif;
-    resize: vertical;
-    outline: none;
+  .input-label {
+    font-size:12px;font-weight:600;color:rgba(255,255,255,0.9);
+    margin-bottom:10px;display:flex;align-items:center;gap:8px;letter-spacing:0.4px;
   }
-  textarea:focus { border-color: #3333CC; }
-
+  .input-label-icon {
+    width:20px;height:20px;background:rgba(255,255,255,0.25);
+    border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;
+  }
+  .upload-zone {
+    border:2px dashed rgba(255,255,255,0.4);border-radius:12px;
+    padding:36px 20px;text-align:center;cursor:pointer;
+    transition:all .3s;background:rgba(255,255,255,0.1);position:relative;
+  }
+  .upload-zone:hover,.upload-zone.dragover {
+    border-color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.2);
+    box-shadow:0 0 0 4px rgba(255,255,255,0.15);
+  }
+  .upload-zone input[type=file] { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
+  .upload-icon { font-size:36px;margin-bottom:10px; }
+  .upload-title { font-size:15px;font-weight:600;color:#ffffff;margin-bottom:6px; }
+  .upload-sub { font-size:12px;color:rgba(255,255,255,0.7); }
+  .upload-formats { display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px; }
+  .fmt-badge { font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;border:1px solid rgba(255,255,255,0.4);color:#ffffff;background:rgba(255,255,255,0.15); }
+  .file-preview {
+    display:none;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;
+    background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);margin-top:12px;
+  }
+  .file-preview.visible { display:flex; }
+  .file-preview-icon { font-size:28px;flex-shrink:0; }
+  .file-preview-info { flex:1;min-width:0; }
+  .file-preview-name { font-size:13px;font-weight:600;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .file-preview-size { font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px; }
+  .file-remove { background:rgba(255,107,107,0.25);border:1px solid rgba(255,107,107,0.5);color:#fff;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Google Sans',sans-serif;flex-shrink:0; }
   .btn-generate {
-    margin-top: 10px;
-    background: linear-gradient(90deg, #1a1a6e, #3333CC);
-    color: #fff;
-    border: none;
-    border-radius: 7px;
-    padding: 10px 28px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    font-family: Verdana, sans-serif;
-    transition: opacity .2s;
+    margin-top:14px;
+    background:linear-gradient(135deg,var(--foscal-blue),var(--foscal-blue-dark));
+    color:#fff;border:1px solid rgba(255,255,255,0.1);border-radius:12px;
+    padding:11px 26px;font-size:14px;font-weight:600;font-family:'Google Sans',sans-serif;
+    cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    box-shadow:0 4px 20px rgba(0,102,179,0.5);transition:all .25s;
   }
-  .btn-generate:disabled { background: #aaa; cursor: not-allowed; }
-  .btn-generate:hover:not(:disabled) { opacity: .9; }
-
-  .error { margin-top: 8px; color: #c00; font-size: 12px; }
-
-  .results { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden; }
-
-  .tabs { display: flex; border-bottom: 2px solid #e8eaf0; }
+  .btn-generate:disabled { background:#334455;cursor:not-allowed;box-shadow:none;transform:none; }
+  .btn-generate:hover:not(:disabled) { transform:translateY(-2px);box-shadow:0 6px 28px rgba(0,102,179,0.6); }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .spinning { display:inline-block;animation:spin 1s linear infinite; }
+  .error {
+    margin-top:10px;color:#ff6b6b;font-size:13px;font-weight:500;
+    padding:10px 14px;background:rgba(255,107,107,0.1);
+    border-radius:8px;border:1px solid rgba(255,107,107,0.3);display:none;
+  }
+  .results {
+    background:linear-gradient(145deg,var(--bg-card),var(--bg-dark));
+    border:1px solid var(--border-color);border-radius:16px;
+    box-shadow:0 4px 24px rgba(0,0,0,0.4);overflow:hidden;display:none;
+  }
+  .tabs { display:flex;background:var(--bg-input);padding:8px;gap:6px;border-bottom:1px solid var(--border-color); }
   .tab-btn {
-    flex: 1;
-    padding: 11px 4px;
-    border: none;
-    background: transparent;
-    color: #555;
-    font-size: 12px;
-    cursor: pointer;
-    font-family: Verdana, sans-serif;
-    transition: background .2s, color .2s;
+    flex:1;padding:11px 8px;border:none;background:transparent;
+    color:var(--text-muted);font-size:12px;font-weight:500;
+    cursor:pointer;font-family:'Google Sans',sans-serif;border-radius:8px;transition:all .2s;
+    display:flex;align-items:center;justify-content:center;gap:5px;
   }
-  .tab-btn.active { background: #1a1a6e; color: #fff; font-weight: bold; }
-
-  .tab-content { padding: 16px; max-height: 480px; overflow-y: auto; }
-
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  /* Markdown rendering */
-  .md-h2 { color: #1a1a6e; margin: 14px 0 4px; font-size: 15px; }
-  .md-h3 { color: #1a1a6e; margin: 12px 0 4px; font-size: 13px; }
-  .md-table-row { font-family: monospace; font-size: 12px; border-bottom: 1px solid #eee; padding: 2px 0; white-space: pre-wrap; }
-  .md-numbered { padding: 2px 0 2px 8px; font-size: 13px; }
-  .md-bullet { padding: 2px 0 2px 12px; font-size: 13px; }
-  .md-line { font-size: 13px; padding: 1px 0; }
-  .md-spacer { height: 6px; }
-
-  /* XML area */
-  .xml-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .xml-label { font-size: 12px; font-weight: bold; color: #333; }
-  .btn-copy {
-    background: #3333CC;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 14px;
-    font-size: 11px;
-    cursor: pointer;
-    font-family: Verdana, sans-serif;
-    transition: background .2s;
-  }
-  .btn-copy.copied { background: #00AA00; }
-
-  pre.xml-block {
-    background: #f5f6fa;
-    border-radius: 7px;
-    padding: 12px;
-    font-size: 10px;
-    overflow-x: auto;
-    border: 1px solid #dde;
-    max-height: 320px;
-    line-height: 1.5;
-    white-space: pre;
-  }
-
-  .empty { color: #999; font-size: 13px; }
-  .footer { text-align: center; margin-top: 12px; font-size: 10px; color: #aaa; }
+  .tab-btn:hover:not(.active) { color:var(--text-secondary);background:rgba(0,102,179,0.1); }
+  .tab-btn.active { background:linear-gradient(135deg,var(--foscal-blue),var(--foscal-blue-dark));color:#fff;font-weight:600;box-shadow:0 2px 12px rgba(0,102,179,0.4); }
+  .tab-content { padding:20px;max-height:500px;overflow-y:auto; }
+  .tab-content::-webkit-scrollbar { width:5px; }
+  .tab-content::-webkit-scrollbar-track { background:var(--bg-card); }
+  .tab-content::-webkit-scrollbar-thumb { background:var(--foscal-blue);border-radius:4px; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+  .md-h2 { color:var(--foscal-blue-light);margin:18px 0 10px;font-size:16px;font-weight:700;padding-bottom:6px;border-bottom:2px solid var(--border-color); }
+  .md-h3 { color:var(--foscal-green);margin:14px 0 6px;font-size:14px;font-weight:600; }
+  .md-table-row { font-family:'Courier New',monospace;font-size:11px;border-bottom:1px solid var(--border-color);padding:7px 0;white-space:pre-wrap;color:var(--text-secondary); }
+  .md-numbered { padding:5px 0 5px 14px;font-size:13px;color:var(--text-primary); }
+  .md-bullet { padding:4px 0 4px 18px;font-size:13px;color:var(--text-secondary); }
+  .md-line { font-size:13px;padding:3px 0;color:var(--text-secondary);line-height:1.7; }
+  .md-spacer { height:8px; }
+  .xml-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:10px 14px;background:rgba(0,102,179,0.15);border-radius:10px;border:1px solid var(--border-color); }
+  .xml-label { font-size:13px;font-weight:600;color:var(--foscal-blue-light); }
+  .btn-copy { background:linear-gradient(135deg,var(--foscal-blue),var(--foscal-blue-dark));color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:11px;font-weight:600;font-family:'Google Sans',sans-serif;cursor:pointer;transition:all .2s; }
+  .btn-copy:hover { transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,102,179,0.5); }
+  .btn-copy.copied { background:linear-gradient(135deg,var(--foscal-green),#5a8f15); }
+  pre.xml-block { background:#000d1a;border-radius:10px;padding:16px;font-size:10px;font-family:'Courier New',monospace;overflow-x:auto;border:1px solid var(--border-color);max-height:340px;line-height:1.6;white-space:pre;color:var(--foscal-blue-light); }
+  .empty { color:var(--text-muted);font-size:13px;text-align:center;padding:36px;background:rgba(0,102,179,0.06);border-radius:12px;border:1px dashed var(--border-color); }
+  .footer { text-align:center;margin-top:20px;font-size:11px;color:#999;padding:12px;display:flex;align-items:center;justify-content:center;gap:6px; }
 </style>
 </head>
 <body>
 
+<div class="accent-bar"></div>
+
 <div class="header">
-  <h1>⬡ FlujoMaster <span>v2.0</span></h1>
-  <p>Generador automático de diagramas draw.io · FOSCAL</p>
+  <div class="header-content">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="18" y="6" width="12" height="36" rx="3" fill="white" opacity="0.95"/>
+          <rect x="6" y="18" width="36" height="12" rx="3" fill="white" opacity="0.95"/>
+          <polyline points="6,38 12,38 16,28 20,44 24,22 28,42 32,32 36,38 42,38" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <div class="pre-title">Generador de Diagramas</div>
+        <h1>FLUJOMASTER <span class="badge">v2.0</span></h1>
+        <div class="sub-title">Diagramas de flujo swimlane para draw.io</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="card">
-  <div class="input-label">📋 PEGA EL PROCEDIMIENTO FOSCAL AQUÍ</div>
-  <textarea id="inputText" placeholder="Pega el texto del procedimiento (actividades, responsables, numerales...)..."></textarea>
-  <br/>
-  <button class="btn-generate" id="btnGenerate" onclick="generate()">⚡ Generar FlujoMaster</button>
+  <div class="input-label">
+    <div class="input-label-icon">📂</div>
+    SUBE EL PROCEDIMIENTO AQUÍ
+  </div>
+
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept=".txt,.md,.pdf,.docx,image/*" onchange="handleFile(this.files[0])"/>
+    <div class="upload-icon">📄</div>
+    <div class="upload-title">Arrastra el archivo aquí o haz clic para seleccionar</div>
+    <div class="upload-sub">PDF, DOCX, TXT, MD o imagen del procedimiento</div>
+    <div class="upload-formats">
+      <span class="fmt-badge">PDF</span>
+      <span class="fmt-badge">DOCX</span>
+      <span class="fmt-badge">TXT</span>
+      <span class="fmt-badge">MD</span>
+      <span class="fmt-badge">JPG</span>
+      <span class="fmt-badge">PNG</span>
+      <span class="fmt-badge">WEBP</span>
+    </div>
+  </div>
+
+  <div class="file-preview" id="filePreview">
+    <div class="file-preview-icon" id="fileIcon">📄</div>
+    <div class="file-preview-info">
+      <div class="file-preview-name" id="fileName">—</div>
+      <div class="file-preview-size" id="fileSize">—</div>
+    </div>
+    <button class="file-remove" onclick="removeFile()">✕ Quitar</button>
+  </div>
+
+  <button class="btn-generate" id="btnGenerate" onclick="generate()">
+    <span id="btnIcon">⚡</span><span id="btnText"> Generar Diagrama</span>
+  </button>
   <div class="error" id="errorMsg"></div>
 </div>
 
-<div class="results" id="results" style="display:none;">
+<div class="results" id="results">
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab(0)">📊 Matriz</button>
     <button class="tab-btn" onclick="switchTab(1)">📄 XML draw.io</button>
@@ -152,39 +227,45 @@
   </div>
 </div>
 
-<div class="footer">FlujoMaster v2.0 · Daniel Arauz · Floridablanca, Santander, CO · 2026</div>
+<div class="footer">
+  ⬡ FlujoMaster v2.0 &middot; Daniel Arauz &middot; Floridablanca, Santander, CO &middot; 2026
+</div>
 
 <script>
 const SYSTEM_PROMPT = `# INSTRUCCIONES OFICIALES PARA CLAUDE — FlujoMaster v2.0
+Versión: 2.0 · Actualizada 2026-03-17
 
 ## REGLA DE ORO ABSOLUTA
-Responde ÚNICAMENTE con las secciones solicitadas en Markdown puro. Sin introducciones, sin saludos, sin conclusiones, sin "¡Claro!", sin "Aquí tienes".
-La única excepción: error técnico real, documento no procesable o información crítica faltante.
+Responde ÚNICAMENTE con las 4 secciones solicitadas en Markdown puro. Sin introducciones, sin saludos, sin conclusiones, sin "¡Claro!", sin "Aquí tienes". La única excepción: error técnico real, documento no procesable o información crítica faltante. En ese caso indicar exactamente qué falta.
 
-## JERARQUÍA DE PRIORIDAD
+## JERARQUÍA DE PRIORIDAD (ninguna capa inferior puede invalidar una superior)
 1. REGLAS LÓGICAS R1-R16         ← máxima prioridad
 2. ALGORITMO DE POSICIONAMIENTO
 3. LÓGICA DE PAGINACIÓN Y DISTRIBUCIÓN
 4. ESCALA VISUAL EN CASCADA
 5. ESTILO GRÁFICO                ← mínima prioridad
 
+---
+
 ## NIVEL 1 — REGLAS LÓGICAS
 
-R1: No inferir nada que no esté declarado explícitamente.
-R2: El texto de cada nodo es el título exacto declarado. Nunca parafrasear, resumir ni ampliar.
+R1: No inferir nada que no esté declarado explícitamente. El diagrama se construye única y exclusivamente con lo que el documento declara de forma literal. Ante duda: no incluirlo y señalarlo en Optimizaciones Opcionales.
+R2: El texto de cada nodo es el título exacto declarado en el documento. Nunca parafrasear, resumir ni ampliar.
 R3: Flujo siempre lineal y secuencial. Sin ramificaciones paralelas salvo declaración explícita.
-R4: Solo personas o roles humanos generan columna swimlane. Plataformas, sistemas o software NO generan columna.
-R5: Cada descripción única de "Persona Responsable" genera columna única e independiente. PROHIBIDO fusionar columnas. Esta regla se aplica SIEMPRE ANTES de verificar límites. Si dos responsables tienen nombre distinto → DOS columnas distintas, sin excepción.
-R6: Secuencia estricta por orden de numeral declarado (1→2→3→n).
+R4: Solo personas o roles humanos generan columna swimlane. Plataformas, sistemas, herramientas o módulos de software NO generan columna bajo ninguna circunstancia.
+R5: Cada descripción única de "Persona Responsable" genera columna única e independiente. PROHIBIDO fusionar columnas por similitud, conveniencia visual o para no superar límites. Esta regla se aplica SIEMPRE ANTES de verificar límites de columnas. Si dos responsables tienen nombre distinto → DOS columnas distintas, sin excepción. NUNCA fusionar para bajar de 6 a 5.
+R6: Secuencia estricta por orden de numeral declarado (1→2→3→n). No se reordena nada.
 R7: Cada numeral se asigna a la columna de su responsable declarado literalmente.
-R8: El nodo de decisión va al final del ciclo operativo correspondiente.
-R9: Toda decisión produce exactamente dos ramas (Sí/No) con destino declarado. Las etiquetas Sí/No son nodos text independientes junto a la flecha — nunca embebidos en el conector.
+R8: El nodo de decisión va al final del ciclo operativo correspondiente. Un rombo solo aparece después de que todos los responsables del ciclo hayan actuado.
+R9: Toda decisión produce exactamente dos ramas (Sí/No) con destino declarado. Prohibido dejar cualquier rama sin destino. Las etiquetas Sí/No son nodos text independientes junto a la flecha — NUNCA embebidos en el conector.
 R10: Roles exclusivos de una rama se ubican solo dentro de esa rama.
 R11: Dos nodos FIN independientes cuando las ramas divergen permanentemente.
-R13: Sí = vértice inferior del rombo (↓). No = vértice lateral (derecho o izquierdo según retroceso).
+R13: Sí = vértice inferior del rombo (↓). No = vértice lateral (derecho o izquierdo según dirección del retroceso).
 R14: Avanza (→ siguiente) = rama principal directa. Retrocede más de 2 nodos = nodo de referencia A/B/C.
 R15: Paginación por filas lógicas del grid.
-R16: Un numeral puede generar dos nodos: rectángulo siempre + rombo adicional si la descripción contiene ¿...?
+R16: Un numeral puede generar dos nodos: rectángulo SIEMPRE + rombo adicional si la descripción contiene ¿...?
+
+---
 
 ## NIVEL 2 — ALGORITMO DE POSICIONAMIENTO EN GRID
 
@@ -193,40 +274,44 @@ Regla de movimiento:
 ↓ baja fila:  col_actual <= col_anterior O celda está ocupada
 
 Reglas especiales inamovibles:
-- INICIO: siempre fila propia obligatoria. El siguiente nodo SIEMPRE baja (↓).
+- INICIO: siempre fila propia obligatoria. El siguiente nodo SIEMPRE baja (↓), sin excepción.
 - FIN: siempre fila propia y sola. Nunca comparte fila.
 - Rombo: siempre solo en su celda. Nunca comparte celda.
-- Sí: sale del vértice inferior del rombo.
+- Sí: sale del vértice inferior del rombo (↓).
 - No: sale del vértice lateral (derecho o izquierdo según retroceso).
 
 Celdas compartidas — distribución HORIZONTAL (1/4 + 3/4):
 - Pentágono de paginación: 1/4 ancho + nodo adyacente 3/4. NUNCA solo salvo filas_página ≤ 7.
 - Nodo referencia A/B/C: 1/4 ancho + nodo adyacente 3/4. NUNCA solo, sin excepción.
-- Pentágono siempre en fila 1 o última fila de la página.
+- Pentágono siempre en fila 1 o última fila de la página. Nunca en filas intermedias.
+- La distribución es siempre horizontal. Nunca vertical.
+
+---
 
 ## NIVEL 3 — LÓGICA DE PAGINACIÓN Y DISTRIBUCIÓN
 
 Columnas — aplicar R5 PRIMERO, LUEGO verificar límites:
-  límite_base = 5 | tolerancia = 6
-  NUNCA fusionar para bajar de 6 a 5.
-  si total_cols <= 6 → 1 bloque
-  sino:
-    bloques = ceil(total_cols / 5)
-    sobrante = total_cols - ((bloques - 1) * 5)
-    si sobrante <= 2 → redistribuir: cols_por_bloque = ceil(total_cols / bloques)
-    sino → 5 por bloque, último absorbe sobrante (máx 6)
+límite_base=5 | tolerancia=6. NUNCA fusionar para bajar de 6 a 5.
+si total_cols <= 6 → 1 bloque
+sino:
+  bloques = ceil(total_cols / 5)
+  sobrante = total_cols - ((bloques - 1) * 5)
+  si sobrante <= 2 → redistribuir: cols_por_bloque = ceil(total_cols / bloques)
+  sino → 5 por bloque, último absorbe sobrante (máx 6)
 
 Filas:
-  límite_base = 9 | tolerancia = 10
-  si total_filas <= 10 → 1 página
-  sino:
-    páginas = ceil(total_filas / 9)
-    sobrante = total_filas - ((páginas - 1) * 9)
-    si sobrante <= 3 → redistribuir: filas_por_página = ceil(total_filas / páginas)
-    sino → 9 por página, última absorbe sobrante (máx 10)
+límite_base=9 | tolerancia=10
+si total_filas <= 10 → 1 página
+sino:
+  páginas = ceil(total_filas / 9)
+  sobrante = total_filas - ((páginas - 1) * 9)
+  si sobrante <= 3 → redistribuir: filas_por_página = ceil(total_filas / páginas)
+  sino → 9 por página, última absorbe sobrante (máx 10)
 
-Columnas activas por página: solo se dibujan columnas con al menos 1 nodo en esa página.
+Columnas activas por página: solo columnas con al menos 1 nodo. Las inactivas no se renderizan.
 ancho_columna = floor(1016 / cols_activas_en_esa_página)
+
+---
 
 ## NIVEL 4 — ESCALA VISUAL EN CASCADA
 
@@ -242,42 +327,81 @@ font_size        = max(6, min(10, floor(alto_nodo * 0.25)))
 ancho_parcial    = floor(ancho_celda * 0.25)
 ancho_compartido = floor(ancho_celda * 0.75 * 0.85)
 
-Y base del grid = MARGIN + HEADER_H + HLINE = 78px
-X nodo = MARGIN + (col * ancho_celda) + (ancho_celda - ancho_nodo) / 2
+Y base del grid = 78px
+X nodo = 20 + (col * ancho_celda) + (ancho_celda - ancho_nodo) / 2
 Y nodo = 78 + (fila * alto_celda) + (alto_celda - alto_nodo) / 2
+
+Tabla de referencia:
+3 cols → celda=338px, nodo=287px | 4 cols → celda=254px, nodo=215px
+5 cols → celda=203px, nodo=172px | 6 cols → celda=169px, nodo=143px
+8 filas → alto_celda=89px, alto_nodo=48px, font=6px
+9 filas → alto_celda=79px, alto_nodo=43px, font=6px
+10 filas → alto_celda=71px, alto_nodo=39px, font=6px
+
+---
 
 ## NIVEL 5 — ESTILO GRÁFICO
 
-Nodos de Acción (Rectángulo):
+Acción (Rectángulo):
 style="rounded=1;whiteSpace=wrap;html=1;overflow=hidden;fillColor=none;strokeColor=#3333CC;strokeWidth=2;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;"
-Texto comienza con número de paso: "1. Texto", "2. Texto"
+Texto: "1. Texto", "2. Texto"...
 
-Nodos de Decisión (Rombo):
+Decisión (Rombo):
 style="rhombus;whiteSpace=wrap;html=1;overflow=hidden;fillColor=none;strokeColor=#E8860A;strokeWidth=2;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;"
 SIEMPRE solo en su celda.
 
 Etiquetas Sí/No:
 style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=FONT_SIZE;fontColor=#000000;fontFamily=Verdana;fontStyle=1;"
+Nodos text independientes. NUNCA embebidos en el conector.
 
 INICIO/FIN (Elipse):
 style="ellipse;whiteSpace=wrap;html=1;overflow=hidden;fillColor=none;strokeColor=#00AA00;strokeWidth=2;fontStyle=1;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;"
 
-Nodo Referencia A/B/C (Elipse pequeña):
+Referencia A/B/C (Elipse pequeña):
 style="ellipse;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;fontStyle=1;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;"
-Ancho = ancho_parcial. Alto = alto_nodo.
+Ancho=ancho_parcial. Alto=alto_nodo. NUNCA solo.
 
-Pentágono de Paginación:
+Pentágono (Casa invertida):
 style="shape=mxgraph.flowchart.start2;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;direction=south;"
-Forma casa invertida, vértice apuntando hacia abajo.
+Ancho=ancho_parcial. NUNCA solo salvo filas_página≤7.
 
 Flechas:
 style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1.5;fillColor=#000000;"
-Salida horizontal (→): exitX=1;exitY=0.5;entryX=0;entryY=0.5
-Salida vertical (↓): exitX=0.5;exitY=1;entryX=0.5;entryY=0
+→ exitX=1;exitY=0.5;entryX=0;entryY=0.5
+↓ exitX=0.5;exitY=1;entryX=0.5;entryY=0
+Flechas que cruzan columnas usan puntos intermedios (Array as="points").
 
-Encabezados de Columna:
+Encabezados:
 style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=10;fontFamily=Verdana;fontColor=#000000;"
-Texto en MAYÚSCULAS, negrita, Verdana 10pt, alto fijo 50px.
+MAYÚSCULAS, Verdana 10pt, y=20, height=50.
+
+Estructura XML obligatoria por página:
+<mxGraphModel><root>
+  <mxCell id="0"/>
+  <mxCell id="1" parent="0"/>
+  <!-- 1. Borde exterior: rect strokeColor=#000000 strokeWidth=2 fillColor=none x=20 y=20 -->
+  <!-- 2. Encabezados: un text por columna activa -->
+  <!-- 3. Línea horizontal: shape=line strokeColor=#000000 strokeWidth=2 x=20 y=70 height=8 -->
+  <!-- 4. Líneas verticales: rect fillColor=#000000 width=1 entre cada columna -->
+  <!-- 5. Nodos y flechas con coordenadas absolutas parent="1" -->
+</root></mxGraphModel>
+
+IDs descriptivos únicos: "inicio", "act1", "dec1", "fin1", "label_si_dec1", "label_no_dec1"
+
+---
+
+## APRENDIZAJES CRÍTICOS
+
+- NUNCA fusionar responsables distintos aunque superen el límite base. Verificar tolerancia primero.
+- NUNCA paginar por conteo de nodos. Siempre por filas lógicas del grid.
+- NUNCA dejar columnas vacías en una página. Redistribuir ancho entre activas.
+- NUNCA usar font_size fijo. Derivar siempre desde alto_nodo.
+- NUNCA omitir whiteSpace=wrap y overflow=hidden.
+- NUNCA embeber Sí/No en conectores. Siempre nodos text independientes.
+- NUNCA usar swimlanes nativos de draw.io.
+- Las medidas se calculan, no se estiman.
+
+---
 
 ## FORMATO DE SALIDA (orden obligatorio)
 
@@ -285,112 +409,172 @@ Texto en MAYÚSCULAS, negrita, Verdana 10pt, alto fijo 50px.
 Tabla Markdown: Numeral | Descripción | Responsable | Tipo (Acción/Decisión/Inicio/Fin)
 
 ### SECCIÓN 2 — ALGORITMO PERFECTO + XML
-Pasos numerados del algoritmo de posicionamiento, luego bloque XML completo e importable entre triple backtick xml.
+Pasos numerados del algoritmo aplicado + bloque XML completo entre triple backtick xml.
 
 ### SECCIÓN 3 — OPTIMIZACIONES OPCIONALES
-Máximo 3, solo mejoras al PROCESO (no al diagrama).
+Máximo 3, solo mejoras al PROCESO.
 
 ### SECCIÓN 4 — INSTRUCCIONES PARA IMPORTAR
-1 párrafo sobre cómo importar el XML en draw.io.`;
+1 párrafo: abrir draw.io → Extras → Editar Diagrama → pegar XML → Aceptar.`;
 
 let currentXml = "";
+let filePayload = null;
+
+const zone = document.getElementById("uploadZone");
+zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("dragover"); });
+zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
+zone.addEventListener("drop", e => { e.preventDefault(); zone.classList.remove("dragover"); const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
+
+const FORMAT_ICONS = { pdf:"📕", docx:"📘", doc:"📘", txt:"📄", md:"📝", png:"🖼️", jpg:"🖼️", jpeg:"🖼️", webp:"🖼️" };
+function formatBytes(b) { return b < 1024*1024 ? (b/1024).toFixed(1)+" KB" : (b/(1024*1024)).toFixed(1)+" MB"; }
+
+function showPreview(file) {
+  const ext = file.name.split(".").pop().toLowerCase();
+  document.getElementById("fileIcon").textContent = FORMAT_ICONS[ext] || "📄";
+  document.getElementById("fileName").textContent = file.name;
+  document.getElementById("fileSize").textContent = formatBytes(file.size)+" · "+ext.toUpperCase();
+  document.getElementById("filePreview").classList.add("visible");
+  document.getElementById("uploadZone").style.display = "none";
+}
+
+function removeFile() {
+  filePayload = null;
+  document.getElementById("fileInput").value = "";
+  document.getElementById("filePreview").classList.remove("visible");
+  document.getElementById("uploadZone").style.display = "block";
+}
+
+async function handleFile(file) {
+  if (!file) return;
+  const ext = file.name.split(".").pop().toLowerCase();
+  const err = document.getElementById("errorMsg");
+  err.style.display = "none";
+  try {
+    if (["txt","md"].includes(ext)) {
+      filePayload = { type:"text", content: await file.text() };
+      showPreview(file);
+    } else if (ext === "docx") {
+      const mammoth = await loadMammoth();
+      const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+      filePayload = { type:"text", content: result.value };
+      showPreview(file);
+    } else if (ext === "pdf") {
+      filePayload = { type:"text", content: await extractPdfText(file) };
+      showPreview(file);
+    } else if (["png","jpg","jpeg","webp"].includes(ext)) {
+      filePayload = { type:"image", content: await fileToBase64(file), mediaType: file.type||"image/jpeg" };
+      showPreview(file);
+    } else {
+      err.textContent = "❌ Formato no soportado. Usa PDF, DOCX, TXT, MD o imagen.";
+      err.style.display = "block";
+    }
+  } catch(e) {
+    err.textContent = "❌ Error al leer el archivo: " + e.message;
+    err.style.display = "block";
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((res,rej) => { const r=new FileReader(); r.onload=()=>res(r.result.split(",")[1]); r.onerror=()=>rej(new Error("Error leyendo")); r.readAsDataURL(file); });
+}
+
+function loadMammoth() {
+  return new Promise((res,rej) => {
+    if (window.mammoth) { res(window.mammoth); return; }
+    const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js";
+    s.onload=()=>res(window.mammoth); s.onerror=()=>rej(new Error("No se pudo cargar mammoth")); document.head.appendChild(s);
+  });
+}
+
+async function extractPdfText(file) {
+  await loadPdfJs();
+  const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+  let text = "";
+  for (let i=1; i<=pdf.numPages; i++) { const p=await pdf.getPage(i); const c=await p.getTextContent(); text+=c.items.map(x=>x.str).join(" ")+"\n"; }
+  return text;
+}
+
+function loadPdfJs() {
+  return new Promise((res,rej) => {
+    if (window.pdfjsLib) { res(); return; }
+    const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.onload=()=>{ pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; res(); };
+    s.onerror=()=>rej(new Error("No se pudo cargar PDF.js")); document.head.appendChild(s);
+  });
+}
 
 function switchTab(idx) {
-  document.querySelectorAll(".tab-btn").forEach((b, i) => b.classList.toggle("active", i === idx));
-  document.querySelectorAll(".tab-panel").forEach((p, i) => p.classList.toggle("active", i === idx));
+  document.querySelectorAll(".tab-btn").forEach((b,i)=>b.classList.toggle("active",i===idx));
+  document.querySelectorAll(".tab-panel").forEach((p,i)=>p.classList.toggle("active",i===idx));
 }
 
 function parseResponse(text) {
-  const get = (n, next) => {
-    const re = new RegExp(`###?\\s*SECCI[ÓO]N\\s*${n}[^#]*([\\s\\S]*?)(?=###?\\s*SECCI[ÓO]N\\s*${next}|$)`, "i");
-    return (text.match(re)?.[1] || "").trim();
-  };
-  return [get(1,2), get(2,3), get(3,4), get(4,"ZZZ")];
+  const get=(n,next)=>{ const re=new RegExp(`###?\\s*SECCI[ÓO]N\\s*${n}[^#]*([\\s\\S]*?)(?=###?\\s*SECCI[ÓO]N\\s*${next}|$)`,"i"); return (text.match(re)?.[1]||"").trim(); };
+  return [get(1,2),get(2,3),get(3,4),get(4,"ZZZ")];
 }
 
-function renderMarkdown(text, container) {
-  container.innerHTML = "";
-  if (!text) { container.innerHTML = '<span class="empty">Sin datos.</span>'; return; }
-  text.split("\n").forEach(line => {
+function renderMarkdown(text,container) {
+  container.innerHTML="";
+  if (!text) { container.innerHTML='<div class="empty">Sin contenido generado.</div>'; return; }
+  text.split("\n").forEach(line=>{
     let el;
-    if (/^#{3}\s/.test(line)) { el = document.createElement("h3"); el.className = "md-h3"; el.textContent = line.replace(/^#{3}\s/,""); }
-    else if (/^#{2}\s/.test(line)) { el = document.createElement("h2"); el.className = "md-h2"; el.textContent = line.replace(/^#{2}\s/,""); }
-    else if (/^\|/.test(line)) { el = document.createElement("div"); el.className = "md-table-row"; el.textContent = line; }
-    else if (/^\d+\./.test(line)) { el = document.createElement("div"); el.className = "md-numbered"; el.textContent = line; }
-    else if (/^[-*]\s/.test(line)) { el = document.createElement("div"); el.className = "md-bullet"; el.textContent = "• " + line.replace(/^[-*]\s/,""); }
-    else if (line.trim() === "") { el = document.createElement("div"); el.className = "md-spacer"; }
-    else { el = document.createElement("div"); el.className = "md-line"; el.textContent = line; }
+    if (/^#{3}\s/.test(line))      { el=document.createElement("h3"); el.className="md-h3"; el.textContent=line.replace(/^#{3}\s/,""); }
+    else if (/^#{2}\s/.test(line)) { el=document.createElement("h2"); el.className="md-h2"; el.textContent=line.replace(/^#{2}\s/,""); }
+    else if (/^\|/.test(line))     { el=document.createElement("div"); el.className="md-table-row"; el.textContent=line; }
+    else if (/^\d+\./.test(line))  { el=document.createElement("div"); el.className="md-numbered"; el.textContent=line; }
+    else if (/^[-*]\s/.test(line)) { el=document.createElement("div"); el.className="md-bullet"; el.textContent="• "+line.replace(/^[-*]\s/,""); }
+    else if (line.trim()==="")     { el=document.createElement("div"); el.className="md-spacer"; }
+    else                           { el=document.createElement("div"); el.className="md-line"; el.textContent=line; }
     container.appendChild(el);
   });
 }
 
-function extractXml(s) {
-  const m = s?.match(/```xml([\s\S]*?)```/i);
-  return m ? m[1].trim() : "";
-}
-
-function renderXmlPanel(s) {
-  const panel = document.getElementById("panel1");
-  panel.innerHTML = "";
-  const withoutXml = s.replace(/```xml[\s\S]*?```/i, "").trim();
-  if (withoutXml) {
-    const div = document.createElement("div");
-    div.style.marginBottom = "12px";
-    renderMarkdown(withoutXml, div);
-    panel.appendChild(div);
-  }
-  const xml = extractXml(s);
-  currentXml = xml;
-  if (xml) {
-    const hdr = document.createElement("div"); hdr.className = "xml-header";
-    const lbl = document.createElement("span"); lbl.className = "xml-label"; lbl.textContent = "XML draw.io";
-    const btn = document.createElement("button"); btn.className = "btn-copy"; btn.textContent = "📋 Copiar XML";
-    btn.onclick = () => {
-      navigator.clipboard.writeText(currentXml);
-      btn.textContent = "✅ Copiado"; btn.classList.add("copied");
-      setTimeout(() => { btn.textContent = "📋 Copiar XML"; btn.classList.remove("copied"); }, 2000);
-    };
-    hdr.appendChild(lbl); hdr.appendChild(btn); panel.appendChild(hdr);
-    const pre = document.createElement("pre"); pre.className = "xml-block"; pre.textContent = xml;
-    panel.appendChild(pre);
+function renderXmlPanel(raw,container) {
+  container.innerHTML="";
+  const withoutXml=raw.replace(/```xml[\s\S]*?```/i,"").trim();
+  if (withoutXml) { const d=document.createElement("div"); d.style.marginBottom="14px"; renderMarkdown(withoutXml,d); container.appendChild(d); }
+  const match=raw.match(/```xml([\s\S]*?)```/i);
+  currentXml=match?match[1].trim():"";
+  if (currentXml) {
+    const hdr=document.createElement("div"); hdr.className="xml-header";
+    const lbl=document.createElement("span"); lbl.className="xml-label"; lbl.textContent="</> Código XML para draw.io";
+    const btn=document.createElement("button"); btn.className="btn-copy"; btn.textContent="📋 Copiar XML";
+    btn.onclick=()=>{ navigator.clipboard.writeText(currentXml).then(()=>{ btn.textContent="✅ Copiado"; btn.classList.add("copied"); setTimeout(()=>{ btn.textContent="📋 Copiar XML"; btn.classList.remove("copied"); },2000); }); };
+    hdr.appendChild(lbl); hdr.appendChild(btn); container.appendChild(hdr);
+    const pre=document.createElement("pre"); pre.className="xml-block"; pre.textContent=currentXml;
+    container.appendChild(pre);
   } else {
-    panel.innerHTML += '<span class="empty">No se encontró XML en la respuesta.</span>';
+    container.innerHTML+='<div class="empty">No se encontró XML en la respuesta.</div>';
   }
 }
 
 async function generate() {
-  const input = document.getElementById("inputText").value.trim();
-  if (!input) return;
-  const btn = document.getElementById("btnGenerate");
-  const err = document.getElementById("errorMsg");
-  btn.disabled = true; btn.textContent = "⏳ Generando..."; err.textContent = "";
-  document.getElementById("results").style.display = "none";
+  const btn=document.getElementById("btnGenerate"), icon=document.getElementById("btnIcon"), txt=document.getElementById("btnText"), err=document.getElementById("errorMsg"), res=document.getElementById("results");
+  err.style.display="none";
+  if (!filePayload) { err.textContent="⚠️ Sube un archivo antes de generar."; err.style.display="block"; return; }
+  btn.disabled=true; icon.innerHTML='<span class="spinning">⚙️</span>'; txt.textContent=" Generando...";
+  res.style.display="none";
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 8000,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: "¡Activa FlujoMaster!\n\n" + input }]
-      })
-    });
-    const data = await res.json();
-    const text = (data.content || []).map(b => b.text || "").join("\n");
-    const sections = parseResponse(text);
-    renderMarkdown(sections[0], document.getElementById("panel0"));
-    renderXmlPanel(sections[1]);
-    renderMarkdown(sections[2] || "Sin optimizaciones.", document.getElementById("panel2"));
-    renderMarkdown(sections[3] || "Sin instrucciones.", document.getElementById("panel3"));
-    document.getElementById("results").style.display = "block";
-    switchTab(0);
+    const userContent = filePayload.type==="image"
+      ? [{ type:"image", source:{ type:"base64", media_type:filePayload.mediaType, data:filePayload.content }},{ type:"text", text:"¡Activa FlujoMaster! Analiza el procedimiento en esta imagen y genera las 4 secciones." }]
+      : "¡Activa FlujoMaster!\n\n"+filePayload.content;
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:8000, system:SYSTEM_PROMPT, messages:[{role:"user",content:userContent}] }) });
+    if (!resp.ok) throw new Error(`Error ${resp.status}: ${resp.statusText}`);
+    const data=await resp.json();
+    const text=(data.content||[]).map(b=>b.text||"").join("\n");
+    const [s1,s2,s3,s4]=parseResponse(text);
+    renderMarkdown(s1,document.getElementById("panel0"));
+    renderXmlPanel(s2,document.getElementById("panel1"));
+    renderMarkdown(s3||"Sin optimizaciones sugeridas.",document.getElementById("panel2"));
+    renderMarkdown(s4||"Sin instrucciones adicionales.",document.getElementById("panel3"));
+    res.style.display="block"; switchTab(0);
+    res.scrollIntoView({behavior:"smooth",block:"start"});
   } catch(e) {
-    err.textContent = "Error al conectar con la API. Intenta de nuevo.";
+    err.textContent="❌ "+e.message; err.style.display="block";
+  } finally {
+    btn.disabled=false; icon.textContent="⚡"; txt.textContent=" Generar Diagrama";
   }
-  btn.disabled = false; btn.textContent = "⚡ Generar FlujoMaster";
 }
 </script>
-
 </body>
 </html>

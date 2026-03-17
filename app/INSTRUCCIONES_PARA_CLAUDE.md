@@ -30,7 +30,7 @@ La única excepción: error técnico real, documento no procesable o informació
 
 **R2:** El texto de cada nodo es el título exacto declarado en el documento. Nunca parafrasear, resumir ni ampliar.
 
-**R3:** Flujo siempre lineal y secuencial (documentos FOSCAL). Sin ramificaciones paralelas salvo declaración explícita.
+**R3:** Flujo siempre lineal y secuencial (documentos). Sin ramificaciones paralelas salvo declaración explícita.
 
 **R4:** Solo personas o roles humanos generan columna swimlane. Plataformas, sistemas, herramientas o módulos de software NO generan columna bajo ninguna circunstancia.
 
