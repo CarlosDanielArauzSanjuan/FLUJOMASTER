@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FlujoMaster v2.0</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #f0f2f8; font-family: Verdana, sans-serif; padding: 16px; }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a6e, #3333CC);
+    border-radius: 12px;
+    padding: 18px 24px;
+    margin-bottom: 16px;
+    color: #fff;
+  }
+  .header h1 { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
+  .header h1 span { font-size: 13px; opacity: .7; }
+  .header p { font-size: 12px; opacity: .8; margin-top: 4px; }
+
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  }
+
+  .input-label { font-size: 12px; font-weight: bold; color: #333; margin-bottom: 8px; }
+
+  textarea {
+    width: 100%;
+    height: 160px;
+    border-radius: 7px;
+    border: 1.5px solid #c5c9e0;
+    padding: 10px;
+    font-size: 12px;
+    font-family: Verdana, sans-serif;
+    resize: vertical;
+    outline: none;
+  }
+  textarea:focus { border-color: #3333CC; }
+
+  .btn-generate {
+    margin-top: 10px;
+    background: linear-gradient(90deg, #1a1a6e, #3333CC);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 28px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: Verdana, sans-serif;
+    transition: opacity .2s;
+  }
+  .btn-generate:disabled { background: #aaa; cursor: not-allowed; }
+  .btn-generate:hover:not(:disabled) { opacity: .9; }
+
+  .error { margin-top: 8px; color: #c00; font-size: 12px; }
+
+  .results { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden; }
+
+  .tabs { display: flex; border-bottom: 2px solid #e8eaf0; }
+  .tab-btn {
+    flex: 1;
+    padding: 11px 4px;
+    border: none;
+    background: transparent;
+    color: #555;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: Verdana, sans-serif;
+    transition: background .2s, color .2s;
+  }
+  .tab-btn.active { background: #1a1a6e; color: #fff; font-weight: bold; }
+
+  .tab-content { padding: 16px; max-height: 480px; overflow-y: auto; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Markdown rendering */
+  .md-h2 { color: #1a1a6e; margin: 14px 0 4px; font-size: 15px; }
+  .md-h3 { color: #1a1a6e; margin: 12px 0 4px; font-size: 13px; }
+  .md-table-row { font-family: monospace; font-size: 12px; border-bottom: 1px solid #eee; padding: 2px 0; white-space: pre-wrap; }
+  .md-numbered { padding: 2px 0 2px 8px; font-size: 13px; }
+  .md-bullet { padding: 2px 0 2px 12px; font-size: 13px; }
+  .md-line { font-size: 13px; padding: 1px 0; }
+  .md-spacer { height: 6px; }
+
+  /* XML area */
+  .xml-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .xml-label { font-size: 12px; font-weight: bold; color: #333; }
+  .btn-copy {
+    background: #3333CC;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 14px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: Verdana, sans-serif;
+    transition: background .2s;
+  }
+  .btn-copy.copied { background: #00AA00; }
+
+  pre.xml-block {
+    background: #f5f6fa;
+    border-radius: 7px;
+    padding: 12px;
+    font-size: 10px;
+    overflow-x: auto;
+    border: 1px solid #dde;
+    max-height: 320px;
+    line-height: 1.5;
+    white-space: pre;
+  }
+
+  .empty { color: #999; font-size: 13px; }
+  .footer { text-align: center; margin-top: 12px; font-size: 10px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⬡ FlujoMaster <span>v2.0</span></h1>
+  <p>Generador automático de diagramas draw.io · FOSCAL</p>
+</div>
+
+<div class="card">
+  <div class="input-label">📋 PEGA EL PROCEDIMIENTO FOSCAL AQUÍ</div>
+  <textarea id="inputText" placeholder="Pega el texto del procedimiento (actividades, responsables, numerales...)..."></textarea>
+  <br/>
+  <button class="btn-generate" id="btnGenerate" onclick="generate()">⚡ Generar FlujoMaster</button>
+  <div class="error" id="errorMsg"></div>
+</div>
+
+<div class="results" id="results" style="display:none;">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(0)">📊 Matriz</button>
+    <button class="tab-btn" onclick="switchTab(1)">📄 XML draw.io</button>
+    <button class="tab-btn" onclick="switchTab(2)">💡 Optimizaciones</button>
+    <button class="tab-btn" onclick="switchTab(3)">📥 Importar</button>
+  </div>
+  <div class="tab-content">
+    <div class="tab-panel active" id="panel0"></div>
+    <div class="tab-panel" id="panel1"></div>
+    <div class="tab-panel" id="panel2"></div>
+    <div class="tab-panel" id="panel3"></div>
+  </div>
+</div>
+
+<div class="footer">FlujoMaster v2.0 · Daniel Arauz · Floridablanca, Santander, CO · 2026</div>
+
+<script>
+const SYSTEM_PROMPT = `# INSTRUCCIONES OFICIALES PARA CLAUDE — FlujoMaster v2.0
+
+## REGLA DE ORO ABSOLUTA
+Responde ÚNICAMENTE con las secciones solicitadas en Markdown puro. Sin introducciones, sin saludos, sin conclusiones, sin "¡Claro!", sin "Aquí tienes".
+La única excepción: error técnico real, documento no procesable o información crítica faltante.
+
+## JERARQUÍA DE PRIORIDAD
+1. REGLAS LÓGICAS R1-R16         ← máxima prioridad
+2. ALGORITMO DE POSICIONAMIENTO
+3. LÓGICA DE PAGINACIÓN Y DISTRIBUCIÓN
+4. ESCALA VISUAL EN CASCADA
+5. ESTILO GRÁFICO                ← mínima prioridad
+
+## NIVEL 1 — REGLAS LÓGICAS
+
+R1: No inferir nada que no esté declarado explícitamente.
+R2: El texto de cada nodo es el título exacto declarado. Nunca parafrasear, resumir ni ampliar.
+R3: Flujo siempre lineal y secuencial. Sin ramificaciones paralelas salvo declaración explícita.
+R4: Solo personas o roles humanos generan columna swimlane. Plataformas, sistemas o software NO generan columna.
+R5: Cada descripción única de "Persona Responsable" genera columna única e independiente. PROHIBIDO fusionar columnas. Esta regla se aplica SIEMPRE ANTES de verificar límites. Si dos responsables tienen nombre distinto → DOS columnas distintas, sin excepción.
+R6: Secuencia estricta por orden de numeral declarado (1→2→3→n).
+R7: Cada numeral se asigna a la columna de su responsable declarado literalmente.
+R8: El nodo de decisión va al final del ciclo operativo correspondiente.
+R9: Toda decisión produce exactamente dos ramas (Sí/No) con destino declarado. Las etiquetas Sí/No son nodos text independientes junto a la flecha — nunca embebidos en el conector.
+R10: Roles exclusivos de una rama se ubican solo dentro de esa rama.
+R11: Dos nodos FIN independientes cuando las ramas divergen permanentemente.
+R13: Sí = vértice inferior del rombo (↓). No = vértice lateral (derecho o izquierdo según retroceso).
+R14: Avanza (→ siguiente) = rama principal directa. Retrocede más de 2 nodos = nodo de referencia A/B/C.
+R15: Paginación por filas lógicas del grid.
+R16: Un numeral puede generar dos nodos: rectángulo siempre + rombo adicional si la descripción contiene ¿...?
+
+## NIVEL 2 — ALGORITMO DE POSICIONAMIENTO EN GRID
+
+Regla de movimiento:
+→ misma fila: col_actual > col_anterior Y celda (fila_actual, col_actual) está libre
+↓ baja fila:  col_actual <= col_anterior O celda está ocupada
+
+Reglas especiales inamovibles:
+- INICIO: siempre fila propia obligatoria. El siguiente nodo SIEMPRE baja (↓).
+- FIN: siempre fila propia y sola. Nunca comparte fila.
+- Rombo: siempre solo en su celda. Nunca comparte celda.
+- Sí: sale del vértice inferior del rombo.
+- No: sale del vértice lateral (derecho o izquierdo según retroceso).
+
+Celdas compartidas — distribución HORIZONTAL (1/4 + 3/4):
+- Pentágono de paginación: 1/4 ancho + nodo adyacente 3/4. NUNCA solo salvo filas_página ≤ 7.
+- Nodo referencia A/B/C: 1/4 ancho + nodo adyacente 3/4. NUNCA solo, sin excepción.
+- Pentágono siempre en fila 1 o última fila de la página.
+
+## NIVEL 3 — LÓGICA DE PAGINACIÓN Y DISTRIBUCIÓN
+
+Columnas — aplicar R5 PRIMERO, LUEGO verificar límites:
+  límite_base = 5 | tolerancia = 6
+  NUNCA fusionar para bajar de 6 a 5.
+  si total_cols <= 6 → 1 bloque
+  sino:
+    bloques = ceil(total_cols / 5)
+    sobrante = total_cols - ((bloques - 1) * 5)
+    si sobrante <= 2 → redistribuir: cols_por_bloque = ceil(total_cols / bloques)
+    sino → 5 por bloque, último absorbe sobrante (máx 6)
+
+Filas:
+  límite_base = 9 | tolerancia = 10
+  si total_filas <= 10 → 1 página
+  sino:
+    páginas = ceil(total_filas / 9)
+    sobrante = total_filas - ((páginas - 1) * 9)
+    si sobrante <= 3 → redistribuir: filas_por_página = ceil(total_filas / páginas)
+    sino → 9 por página, última absorbe sobrante (máx 10)
+
+Columnas activas por página: solo se dibujan columnas con al menos 1 nodo en esa página.
+ancho_columna = floor(1016 / cols_activas_en_esa_página)
+
+## NIVEL 4 — ESCALA VISUAL EN CASCADA
+
+PAGE_W=1056px | PAGE_H=816px (carta landscape 96dpi)
+MARGIN=20px | HEADER_H=50px | HLINE=8px
+USABLE_W=1016px | USABLE_H=718px
+
+ancho_celda      = floor(1016 / cols_activas)
+alto_celda       = floor(718  / filas_página)
+ancho_nodo       = floor(ancho_celda * 0.85)
+alto_nodo        = floor(alto_celda  * 0.55)
+font_size        = max(6, min(10, floor(alto_nodo * 0.25)))
+ancho_parcial    = floor(ancho_celda * 0.25)
+ancho_compartido = floor(ancho_celda * 0.75 * 0.85)
+
+Y base del grid = MARGIN + HEADER_H + HLINE = 78px
+X nodo = MARGIN + (col * ancho_celda) + (ancho_celda - ancho_nodo) / 2
+Y nodo = 78 + (fila * alto_celda) + (alto_celda - alto_nodo) / 2
+
+## NIVEL 5 — ESTILO GRÁFICO
+
+Nodos de Acción (Rectángulo):
+style="rounded=1;whiteSpace=wrap;html=1;overflow=hidden;fillColor=none;strokeColor=#3333CC;strokeWidth=2;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;"
+Texto comienza con número de paso: "1. Texto", "2. Texto"
+
+Nodos de Decisión (Rombo):
+style="rhombus;whiteSpace=wrap;html=1;overflow=hidden;fillColor=none;strokeColor=#E8860A;strokeWidth=2;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;"
+SIEMPRE solo en su celda.
+
+Etiquetas Sí/No:
+style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=FONT_SIZE;fontColor=#000000;fontFamily=Verdana;fontStyle=1;"
+
+INICIO/FIN (Elipse):
+style="ellipse;whiteSpace=wrap;html=1;overflow=hidden;fillColor=none;strokeColor=#00AA00;strokeWidth=2;fontStyle=1;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;"
+
+Nodo Referencia A/B/C (Elipse pequeña):
+style="ellipse;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;fontStyle=1;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;"
+Ancho = ancho_parcial. Alto = alto_nodo.
+
+Pentágono de Paginación:
+style="shape=mxgraph.flowchart.start2;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=1.5;fontColor=#000000;fontFamily=Verdana;fontSize=FONT_SIZE;direction=south;"
+Forma casa invertida, vértice apuntando hacia abajo.
+
+Flechas:
+style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1.5;fillColor=#000000;"
+Salida horizontal (→): exitX=1;exitY=0.5;entryX=0;entryY=0.5
+Salida vertical (↓): exitX=0.5;exitY=1;entryX=0.5;entryY=0
+
+Encabezados de Columna:
+style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=10;fontFamily=Verdana;fontColor=#000000;"
+Texto en MAYÚSCULAS, negrita, Verdana 10pt, alto fijo 50px.
+
+## FORMATO DE SALIDA (orden obligatorio)
+
+### SECCIÓN 1 — MATRIZ DE RESPONSABLES
+Tabla Markdown: Numeral | Descripción | Responsable | Tipo (Acción/Decisión/Inicio/Fin)
+
+### SECCIÓN 2 — ALGORITMO PERFECTO + XML
+Pasos numerados del algoritmo de posicionamiento, luego bloque XML completo e importable entre triple backtick xml.
+
+### SECCIÓN 3 — OPTIMIZACIONES OPCIONALES
+Máximo 3, solo mejoras al PROCESO (no al diagrama).
+
+### SECCIÓN 4 — INSTRUCCIONES PARA IMPORTAR
+1 párrafo sobre cómo importar el XML en draw.io.`;
+
+let currentXml = "";
+
+function switchTab(idx) {
+  document.querySelectorAll(".tab-btn").forEach((b, i) => b.classList.toggle("active", i === idx));
+  document.querySelectorAll(".tab-panel").forEach((p, i) => p.classList.toggle("active", i === idx));
+}
+
+function parseResponse(text) {
+  const get = (n, next) => {
+    const re = new RegExp(`###?\\s*SECCI[ÓO]N\\s*${n}[^#]*([\\s\\S]*?)(?=###?\\s*SECCI[ÓO]N\\s*${next}|$)`, "i");
+    return (text.match(re)?.[1] || "").trim();
+  };
+  return [get(1,2), get(2,3), get(3,4), get(4,"ZZZ")];
+}
+
+function renderMarkdown(text, container) {
+  container.innerHTML = "";
+  if (!text) { container.innerHTML = '<span class="empty">Sin datos.</span>'; return; }
+  text.split("\n").forEach(line => {
+    let el;
+    if (/^#{3}\s/.test(line)) { el = document.createElement("h3"); el.className = "md-h3"; el.textContent = line.replace(/^#{3}\s/,""); }
+    else if (/^#{2}\s/.test(line)) { el = document.createElement("h2"); el.className = "md-h2"; el.textContent = line.replace(/^#{2}\s/,""); }
+    else if (/^\|/.test(line)) { el = document.createElement("div"); el.className = "md-table-row"; el.textContent = line; }
+    else if (/^\d+\./.test(line)) { el = document.createElement("div"); el.className = "md-numbered"; el.textContent = line; }
+    else if (/^[-*]\s/.test(line)) { el = document.createElement("div"); el.className = "md-bullet"; el.textContent = "• " + line.replace(/^[-*]\s/,""); }
+    else if (line.trim() === "") { el = document.createElement("div"); el.className = "md-spacer"; }
+    else { el = document.createElement("div"); el.className = "md-line"; el.textContent = line; }
+    container.appendChild(el);
+  });
+}
+
+function extractXml(s) {
+  const m = s?.match(/```xml([\s\S]*?)```/i);
+  return m ? m[1].trim() : "";
+}
+
+function renderXmlPanel(s) {
+  const panel = document.getElementById("panel1");
+  panel.innerHTML = "";
+  const withoutXml = s.replace(/```xml[\s\S]*?```/i, "").trim();
+  if (withoutXml) {
+    const div = document.createElement("div");
+    div.style.marginBottom = "12px";
+    renderMarkdown(withoutXml, div);
+    panel.appendChild(div);
+  }
+  const xml = extractXml(s);
+  currentXml = xml;
+  if (xml) {
+    const hdr = document.createElement("div"); hdr.className = "xml-header";
+    const lbl = document.createElement("span"); lbl.className = "xml-label"; lbl.textContent = "XML draw.io";
+    const btn = document.createElement("button"); btn.className = "btn-copy"; btn.textContent = "📋 Copiar XML";
+    btn.onclick = () => {
+      navigator.clipboard.writeText(currentXml);
+      btn.textContent = "✅ Copiado"; btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = "📋 Copiar XML"; btn.classList.remove("copied"); }, 2000);
+    };
+    hdr.appendChild(lbl); hdr.appendChild(btn); panel.appendChild(hdr);
+    const pre = document.createElement("pre"); pre.className = "xml-block"; pre.textContent = xml;
+    panel.appendChild(pre);
+  } else {
+    panel.innerHTML += '<span class="empty">No se encontró XML en la respuesta.</span>';
+  }
+}
+
+async function generate() {
+  const input = document.getElementById("inputText").value.trim();
+  if (!input) return;
+  const btn = document.getElementById("btnGenerate");
+  const err = document.getElementById("errorMsg");
+  btn.disabled = true; btn.textContent = "⏳ Generando..."; err.textContent = "";
+  document.getElementById("results").style.display = "none";
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 8000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: "user", content: "¡Activa FlujoMaster!\n\n" + input }]
+      })
+    });
+    const data = await res.json();
+    const text = (data.content || []).map(b => b.text || "").join("\n");
+    const sections = parseResponse(text);
+    renderMarkdown(sections[0], document.getElementById("panel0"));
+    renderXmlPanel(sections[1]);
+    renderMarkdown(sections[2] || "Sin optimizaciones.", document.getElementById("panel2"));
+    renderMarkdown(sections[3] || "Sin instrucciones.", document.getElementById("panel3"));
+    document.getElementById("results").style.display = "block";
+    switchTab(0);
+  } catch(e) {
+    err.textContent = "Error al conectar con la API. Intenta de nuevo.";
+  }
+  btn.disabled = false; btn.textContent = "⚡ Generar FlujoMaster";
+}
+</script>
+
+</body>
+</html>
