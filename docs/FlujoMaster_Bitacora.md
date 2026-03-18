@@ -217,3 +217,15 @@ Figura y texto nunca salen de su celda. whiteSpace=wrap + overflow=hidden obliga
 
 ---
 
+## [2026-03-18] Sesión 9 — Corrección de fórmula de paginación
+
+**Error detectado:** La fórmula anterior calculaba páginas con ceil(total/límite_base)
+y redistribuía entre ese mismo número de páginas, sin considerar que el sobrante
+pequeño permite reducir el número de páginas usando la tolerancia.
+
+**Ejemplo del error:** 19 filas → ceil(19/9)=3 páginas → sobrante=1 → redistribuía
+en 3 páginas (7+6+6) en lugar de reducir a 2 páginas (10+9).
+
+**Corrección:** Agregar PASO 1 con páginas_min = ceil(total/límite_tolerancia).
+Cuando sobrante ≤ umbral, usar páginas_min como número final de páginas.
+La misma lógica aplica simétricamente para columnas en bloques.
