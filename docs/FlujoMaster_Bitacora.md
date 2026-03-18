@@ -76,7 +76,7 @@ transmitir el razonamiento detrás de cada decisión, la forma de pensar y del r
 **Intento 1 (Claude):** Paginar por px acumulados por columna → desperdiciaba espacio en columnas vacías.
 **Intento 2 (Claude):** Paginar por conteo de nodos → nodos de distinta altura generaban páginas desiguales.
 
-**Observación de Daniel:** "es mejor verlo con coordenadas" — propuso el modelo de grid tipo batalla naval donde cada nodo ocupa una celda (fila × columna).
+**Observación de Daniel:** "es mejor verlo con coordenadas" — propuso el modelo de grid tipo "batalla naval" donde cada nodo ocupa una celda (fila × columna).
 
 **Aprendizaje:** El flujo swimlane es una matriz. La paginación debe calcularse por filas lógicas, no por nodos individuales ni por px de columna. Cada fila ocupa la misma Y independientemente de en qué columna esté el nodo.
 
@@ -158,7 +158,7 @@ Figura y texto nunca salen de su celda. whiteSpace=wrap + overflow=hidden obliga
 
 **Problema:** Los nodos se colocaban una fila abajo cada vez que cambiaban de columna, aunque debían ir en paralelo.
 
-**Observación de Daniel:** "hay otro error, en la división de celdas, cuando un proceso va de la columna 1 a la columna 2 tú colocas el nodo una fila verticalmente más abajo, cuando deberían ser paralelas".
+**Observación de Daniel:** "hay otro error, en la división de celdas, cuando un proceso va de la columna 1 a la columna 2, se colocó el nodo una fila verticalmente más abajo, cuando deberían ser paralelas".
 
 **Iteración:** Claude interpretó que todos los nodos directamente conectados van en la misma fila. Daniel corrigió: "las filas deberían ser espacios de memoria" — la fila solo avanza cuando la columna del siguiente nodo es igual o menor a la columna actual.
 
@@ -229,3 +229,36 @@ en 3 páginas (7+6+6) en lugar de reducir a 2 páginas (10+9).
 **Corrección:** Agregar PASO 1 con páginas_min = ceil(total/límite_tolerancia).
 Cuando sobrante ≤ umbral, usar páginas_min como número final de páginas.
 La misma lógica aplica simétricamente para columnas en bloques.
+
+## [2026-03-18] Sesión 10 — Reducción de verbosidad y protocolo de lectura obligatorio
+
+**Problema detectado por Daniel:** El formato de salida era excesivamente extenso,
+consumiendo límite de chat con secciones innecesarias para el usuario final.
+
+**Secciones eliminadas del formato de salida:**
+- Algoritmo Perfecto — no aporta valor al usuario, solo consume tokens
+- Grid de nodos — era información interna de construcción, no un entregable
+- Nodos de referencia requeridos — información interna, no un entregable
+
+**Cambios al formato de salida aprobados:**
+1. Matriz de Responsables — descripción del paso debe ser resumida (no literal extensa)
+2. Confirmaciones interactivas — una por turno, en este orden:
+   a. ¿Las columnas detectadas son correctas?
+   b. ¿El número de actividades es correcto?
+   c. ¿La distribución de páginas es correcta? (SOLO si páginas > 2)
+3. XML draw.io — completo dentro de bloque de código
+4. Optimizaciones Opcionales — máximo 3
+
+**Problema adicional detectado:** Claude repitió errores ya registrados en bitácora
+porque no existe un protocolo formal de lectura de archivos del proyecto antes
+de procesar el documento del usuario.
+
+**Protocolo de ejecución obligatorio aprobado:**
+Antes de leer cualquier documento del usuario, leer en este orden:
+1. FlujoMaster_Bitacora.md
+2. INSTRUCCIONES_PARA_CLAUDE.md
+3. FlujoMaster_EstiloVisual.md
+Solo después de completar estos 3 pasos, procesar el documento del usuario.
+
+**Aprendizaje:** Los errores que ya están en bitácora son inadmisibles. La bitácora
+solo tiene valor si se lee antes de ejecutar — no después de cometer el error.
