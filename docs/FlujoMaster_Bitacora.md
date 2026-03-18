@@ -1,6 +1,22 @@
 # FlujoMaster — Bitácora de Trazabilidad
-**Autor:** Daniel Arauz · Floridablanca, Santander, CO
+**Autor:** Daniel Arauz Sanjuan· Practicas empresariales Foscal. 
+Floridablanca, Santander, CO
 **Propósito:** Registro cronológico de interacciones, decisiones, errores y aprendizajes. Memoria de entrenamiento del proyecto para ser leída por Claude en cualquier sesión futura.
+
+## AVISO DE LECTURA — PARA CLAUDE
+
+Esta bitácora es un registro cronológico documental. Registra el proceso
+de toma de decisiones, errores cometidos, correcciones aplicadas y la
+evolución del pensamiento a lo largo del proyecto.
+
+**No extraer reglas ni fórmulas de aquí.** Las versiones anteriores de
+fórmulas y decisiones que aparecen en entradas antiguas pueden haber sido
+superadas por entradas posteriores. La fuente de verdad operativa siempre
+es INSTRUCCIONES_PARA_CLAUDE.md y FlujoMaster_EstiloVisual.md.
+
+**Sí leer esta bitácora completa** antes de cada sesión. Su valor está en
+transmitir el razonamiento detrás de cada decisión, la forma de pensar y del razonamiento interno, y los errores ya cometidos — para no repetirlos. Entender el
+"por qué" de cada regla es tan importante como la regla misma.
 
 ---
 
@@ -201,7 +217,3 @@ Figura y texto nunca salen de su celda. whiteSpace=wrap + overflow=hidden obliga
 
 ---
 
-## PENDIENTES ACTIVOS
-- Documentar todos los arreglos técnicos en FlujoMaster_EstiloVisual.md e INSTRUCCIONES_PARA_CLAUDE.md (ver FlujoMaster_Pendientes_Tecnicos.md)
-- Validar visualmente el XML de Ventilación No Invasiva importado en draw.io
-- Regenerar XML de Medicamentos No Oncológicos con todas las reglas nuevas aplicadas
